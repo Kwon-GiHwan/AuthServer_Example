@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from ..dependencies import get_token_header
 
 router = APIRouter(
-    prefix="/items",
-    tags=["items"],
+    prefix="/users",
+    tags=["users"],
     dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
@@ -31,7 +31,9 @@ async def read_item(item_id: str):
     tags=["custom"],
     responses={403: {"description": "Operation forbidden"}},
 )
-async def update_item(item_id: str):
+async def register(user_id: str, user_pw):
+
+
     if item_id != "plumbus":
         raise HTTPException(
             status_code=403, detail="You can only update the item: plumbus"
