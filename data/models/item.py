@@ -6,5 +6,3 @@ class Item(BaseModel):
     description: str | None = None
     price: float
     tax: float | None = None
-
-
