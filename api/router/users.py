@@ -1,7 +1,19 @@
 #CRUD
 from fastapi import APIRouter, Depends, HTTPException
-
+from starlette.middleware.cors import CORSMiddleware
 from ..dependencies import get_token_header
+
+from fastapi.security import OAuth2PasswordRequestForm
+from jose import jwt
+from datetime import timedelta, datetime
+
+from domain.user.user_crud import pwd_context
+
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
+import secrets
+secrets.token_hex(32)
+SECRET_KEY = "4ab2fce7a6bd79e1c014396315ed322dd6edb1c5d975c6b74a2904135172c03c"
+ALGORITHM = "HS256"
 
 router = APIRouter(
     prefix="/users",
@@ -10,52 +22,47 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-fake_items_db = {"plumbus": {"name": "Plumbus"}, "gun": {"name": "Portal Gun"}}
-
 @router.post(
-    "/",
+    "/register/",
     tags=["users"],
     responses={403: {"description": "Operation forbidden"}},
+    status_code=status.HTTP_204_NO_CONTENT,
 )
-async def register(user_id: str, user_pw):
-    #check if id is in db already
-    #return error or check response
+async def register(_user_create: user_schema.UserCreate, db: Session = Depends(get_db)):
+    user = user_crud.get_existing_user(db, user_create=_user_create)
+    if user:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail="이미 존재하는 사용자입니다.")
+    user_crud.create_user(db=db, user_create=_user_create)
 
-
-    if item_id != "plumbus":
-        raise HTTPException(
-            status_code=403, detail="You can only update the item: plumbus"
-        )
-    return {"item_id": item_id, "name": "The great Plumbus"}
 
 @router.post(
     "/login/",
     tags=["users"],
     status_code=200,
     responses={403: {"description": "Operation forbidden"}},
-)
-async def login(user_info: models.UserRegister):
-    is_exist = await is_email_exist(user_info.email)
+    response_model=user_schema.Token)
+def login(form_data: OAuth2PasswordRequestForm = Depends(),
+                           db: Session = Depends(get_db)):
 
-    if not user_info.email or not user_info.pw:
-        return JSONResponse(status_code=400, content=dict(msg="Email and PW must be provided'"))
-    if not is_exist:
-        return JSONResponse(status_code=400, content=dict(msg="NO_MATCH_USER"))
+    # check user and password
+    user = user_crud.get_user(db, form_data.username)
+    if not user or not pwd_context.verify(form_data.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-    user = Users.get(email=user_info.email)
-    is_verified = bcrypt.checkpw(user_info.pw.encode("utf-8"), user.pw.encode("utf-8"))
+    # make access token
+    data = {
+        "sub": user.username,
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    }
+    access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
-    if not is_verified:
-        return JSONResponse(status_code=400, content=dict(msg="NO_MATCH_USER"))
-    token = dict(
-        Authorization=f"Bearer {create_access_token(data=UserToken.from_orm(user).dict(exclude={'pw', 'marketing_agree'}),)}")
-    return token
-@router.post(
-    "/",
-    tags=["users"],
-    responses={403: {"description": "Operation forbidden"}},
-)
-async def logout(user_id: str, user_pw):
-    #token related operations
-
-    return {"item_id": item_id, "name": "The great Plumbus"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "username": user.username
+    }
