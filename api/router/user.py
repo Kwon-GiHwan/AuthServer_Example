@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from ..dependencies import get_token_header
 
-from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from jose import jwt, JWTError
 from datetime import timedelta, datetime
 
 from domain.user.user_crud import pwd_context
@@ -14,6 +14,8 @@ import secrets
 secrets.token_hex(32)
 SECRET_KEY = "4ab2fce7a6bd79e1c014396315ed322dd6edb1c5d975c6b74a2904135172c03c"
 ALGORITHM = "HS256"
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 
 router = APIRouter(
     prefix="/users",
@@ -40,7 +42,7 @@ async def register(_user_create: user_schema.UserCreate, db: Session = Depends(g
     "/login/",
     tags=["users"],
     status_code=200,
-    responses={403: {"description": "Operation forbidden"}},
+    # responses={403: {"description": "Operation forbidden"}},
     response_model=user_schema.Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(),
                            db: Session = Depends(get_db)):
@@ -66,3 +68,23 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(),
         "token_type": "bearer",
         "username": user.username
     }
+
+def get_current_user(token: str = Depends(oauth2_scheme),
+                     db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    else:
+        user = user_crud.get_user(db, username=username)
+        if user is None:
+            raise credentials_exception
+        return user
