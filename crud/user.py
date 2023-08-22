@@ -1,25 +1,20 @@
 
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from ..schemas.user import UserCreate
-from ..models.user import User
+from schemas.user import UserCreate
+from db.models import UserModel
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def create_user(db: Session, user_create: UserCreate):
-    db_user = User(username=user_create.username,
-                   password=pwd_context.hash(user_create.password1),
-                   email=user_create.email)
+    db_user = UserModel(username=user_create.phone,
+                   password=pwd_context.hash(user_create.password))
     db.add(db_user)
     db.commit()
 
-def get_existing_user(db: Session, user_create: UserCreate):
-    return db.query(User).filter(
-        (User.username == user_create.username) |
-        (User.email == user_create.email)
+def get_user(db: Session, user_create: UserCreate):
+    return db.query(UserModel).filter(
+        (UserModel.phone == user_create.phone)
     ).first()
-
-def get_current_user(db: Session, user_info: User):
-    pass

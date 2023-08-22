@@ -8,29 +8,25 @@ from .orm_connector import Base
 class UserModel(Base):
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True, index=True)
-    phone = Column(String, unique=True, index=True, nullable=False)
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
+    phone = Column(String, nullable=False)
     password = Column(String, nullable=False)
-
-    user = relationship("Item", back_populates="user")
 
 
 class ItemModel(Base):
     __tablename__ = 'item'
 
-    id: Column(Integer, primary_key=True, index=True)
-    category: Column(String, unique=True, index=True, nullable=False)
+    item_id: Column(Integer, primary_key=True, autoincrement=True)
+    category: Column(String, nullable=False)
     price: Column(Integer, nullable=False)
     cost: Column(Integer, nullable=False)
-    name: Column(String, index=True, nullable=False)
-    initial: Column(String, index=True, nullable=False)
-    description: Column(String, index=True, nullable=False)
-    barcode: Column(String, index=True, nullable=False)
-    duedate: Column(Datetime, index=True, nullable=False)
-    size: Column(String, index=True, nullable=False)#small or large
-    #index True 고려하기
-    user_id = Column(Integer, ForeignKey("user.id"))#수정하기
-    # question = relationship("Question", backref="answers")
-    # user = relationship("Item", back_populates="owner")#forein 키 추가
+    name: Column(String, nullable=False)
+    initial: Column(String, nullable=False)
+    description: Column(String, nullable=False)
+    barcode: Column(String, nullable=False)
+    duedate: Column(Datetime, nullable=False)
+    size: Column(String, nullable=False)#small or large
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)#수정하기
+
 
 

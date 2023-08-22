@@ -1,19 +1,21 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
+from datetime import datetime
+
 from db.models import UserModel, ItemModel
 import schemas.item as schema
 
 
-def get_list(db: Session, user_id: int, cursor: int = 0, limit: int = 10):
+def get_list(db: Session, user_id: int, cursor: int = 0, size: int = 10):
 
     total = 0#전체 갯수 조회하기
     item_list = db.query(schema.Item).filter(
-        schema.Item.user_id == user_id, schema.Item.id > cursor).limit(limit).all()
+        schema.Item.user_id == user_id, schema.Item.id > cursor).limit(size).all()
 
-    return total, item_list  # (전체 건수, 페이징 적용된 질문 목록)
+    return item_list  # (전체 건수, 페이징 적용된 질문 목록)
 
-def get_detail(db: Session, item_id: int):
+def get_item(db: Session, item_id: int):
     item = db.query(schema.Item).filter(schema.Item.item_id == item_id).first()
 
     return item  # (전체 건수, 페이징 적용된 질문 목록)
@@ -42,18 +44,16 @@ def search_name(db: Session, user_id:int, cursor: int, item_name: str, limit: in
     return item_list
 
 
-def create_item(db: Session, item: schema.ItemCreate, user_id: int):
-    db_item = ItemModel(**item.dict(), user_id=user_id)
+def create_item(db: Session, item: schema.ItemCreate, initial:str, user_id: int):
+
+    db_item = ItemModel(**item.model_dump(), initial=initial, user_id=user_id)
     db.add(db_item)
     db.commit()
     # return db_item
 
-def update_item(db: Session, item: schema.Item,
-                    item_update: schema.ItemUpdate):
-    item.subject = item_update.subject
-    item.content = item_update.content
-    item.modify_date = datetime.now()
-    db.add(item)
+def update_item(db: Session, item: schema.ItemUpdate):
+
+    db.query(schema.Item).filter(schema.Item.item_id == item.item_id).update(**item.model_dump().pop('item_id'))
     db.commit()
 
 def delete_item(db: Session, item: schema.Item):

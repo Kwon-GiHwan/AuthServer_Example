@@ -15,7 +15,7 @@ def separate(ch):
     joongseong = ((uindex - jongseong) // 28) % 21
     choseong = ((uindex - jongseong) // 28) // 21
 
-    return (choseong, joongseong, jongseong)
+    return choseong
 
 def build(choseong, joongseong, jongseong):
     """초성, 중성, 종성을 조합하여 완성형 한 글자를 만듦. 'choseong',

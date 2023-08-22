@@ -1,7 +1,4 @@
-#CRUD
 from fastapi import APIRouter, Depends, HTTPException, status
-from starlette.middleware.cors import CORSMiddleware
-# from ..dependencies import get_token_header
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
@@ -11,6 +8,8 @@ from datetime import timedelta, datetime
 import crud.user as crud
 import schemas.user as schema
 import db.orm_connector as db
+
+from schemas.response import response_builder
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 import secrets
@@ -23,23 +22,19 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    dependencies=[Depends(db.get_db)],
-    responses={404: {"description": "Not found"}},
 )
 
 @router.post(
     "/register/",
     tags=["users"],
-    responses={403: {"description": "Operation forbidden"}},
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def register(_user_create: schema.UserCreate, db: Session = Depends(db.get_db)):
-    user = crud.get_existing_user(db, user_create=_user_create)
+async def register(user: schema.UserCreate, db: Session = Depends(db.get_db)):
+    user = crud.get_user(db, user_create=user)
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail="이미 존재하는 사용자입니다.")
-    crud.create_user(db=db, user_create=_user_create)
-
+                            detail=response_builder(409, '존재하는 사용자'))
+    crud.create_user(db=db, user_create=user)
 
 @router.post(
     "/login/",
@@ -52,6 +47,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(),
 
     # check user and password
     user = crud.get_user(db, form_data.username)
+
     if not user or not crud.pwd_context.verify(form_data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -72,8 +68,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(),
         "username": user.username
     }
 
-def get_current_user(token: str = Depends(oauth2_scheme),
-                     db: Session = Depends(db.get_db)):
+def user_token(token: str = Depends(oauth2_scheme),
+               db: Session = Depends(db.get_db)):
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
