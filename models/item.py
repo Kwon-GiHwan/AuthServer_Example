@@ -1,11 +1,9 @@
 #define crud for each user
 
-from typing import TYPE_CHECKING
-
-from sqlalchemy import Boolean, Column, Integer, String, Datetime
+from sqlalchemy import Column, Integer, String, Datetime
 from sqlalchemy.orm import relationship
 
-from ..orm_connector import Base
+from db.orm_connector import Base
 
 
 
@@ -23,8 +21,9 @@ class Item(Base):
     duedate: Column(Datetime, index=True, nullable=False)
     size: Column(String, index=True, nullable=False)#small or large
 
-
-    user = relationship("Item", back_populates="owner")#forein 키 추가
+    # question_id = Column(Integer, ForeignKey("question.id"))
+    # question = relationship("Question", backref="answers")
+    # user = relationship("Item", back_populates="owner")#forein 키 추가
 
 class ItemCreate(Item):
     id: Column(Integer, primary_key=True, index=True)

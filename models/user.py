@@ -3,7 +3,7 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
-from ..orm_connector import Base
+from db.orm_connector import Base
 
 
 
@@ -15,3 +15,4 @@ class User(Base):
     phone = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     items = relationship("Item", back_populates="owner")#relation 고치기
+

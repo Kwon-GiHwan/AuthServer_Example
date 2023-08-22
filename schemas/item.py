@@ -25,6 +25,9 @@ class Item(BaseModel):
             raise ValueError('Empty string {}', value )#고치기
         return value
 
+    class Config:
+        orm_mode = True
+
 class ItemList(BaseModel):
     total: int = 0
     item_list: list[Item] = []

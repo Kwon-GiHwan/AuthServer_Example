@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
-from  import models, schemas
-from ..models.item import ItemCreate
+from.  import models
+from models.item import ItemCreate
 
 
 def get_list(db: Session, user_id: int, cursor: int = 0, limit: int = 10):
