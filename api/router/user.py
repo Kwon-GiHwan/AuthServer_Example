@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
 from datetime import timedelta, datetime
+import secrets
 
 
 import crud.user as crud
@@ -12,9 +13,7 @@ import db.orm_connector as db
 from schemas.response import response_builder
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
-import secrets
-secrets.token_hex(32)
-SECRET_KEY = "4ab2fce7a6bd79e1c014396315ed322dd6edb1c5d975c6b74a2904135172c03c"
+SECRET_KEY = secrets.token_hex(32)
 ALGORITHM = "HS256"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")

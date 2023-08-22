@@ -1,13 +1,12 @@
-from fastapi import Depends, FastAPI
-
-
-app = FastAPI(dependencies=[Depends(get_query_token)])
-
+from fastapi import  FastAPI
+from router import user, item
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
 app = FastAPI()
 
 origins = [
-    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
 ]
 
 app.add_middleware(
@@ -18,30 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(users.router)
-app.include_router(items.router)
-app.include_router(
-    admin.router,
-    prefix="/admin",
-    tags=["admin"],
-    dependencies=[Depends(get_token_header)],
-    responses={418: {"description": "I'm a teapot"}},
-)
+app.include_router(user.router)
+app.include_router(item.router)
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello Bigger Applications!"}
-
-from typing import Optional
-
-import uvicorn
-from fastapi import FastAPI
-
-from app.common.config import conf
-
-
-app = create_app()
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=80, reload=True)
