@@ -1,59 +1,63 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-import crud
-import schemas
+from schemas.item import ItemList, ItemDelete, ItemCreate, ItemUpdate
+import crud.item as crud
+from db.models import UserModel
 import db.orm_connector as db
 
-from .user import get_current_user
-
-from ..auth.token import get_token_header
+from user import get_current_user
 
 router = APIRouter(
     prefix="/items",
     tags=["items"],
-    dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
 
-@router.get("/list", response_model=question_schema.QuestionList)
+@router.get("/list", response_model=ItemList)
 def read_item(db: Session = Depends(db.get_db),
                   page: int = 0, size: int = 10):
-    total, _question_list = question_crud.get_question_list(
+
+    total, _item_list = crud.get_item_list(
         db, skip=page*size, limit=size)
     return {
         'total': total,
-        'question_list': _question_list
+        'item_list': _item_list
     }
 
 @router.post("/create/", status_code=status.HTTP_204_NO_CONTENT)
-def create_item(_question_create: question_schema.QuestionCreate,
+def create_item(_item_create: ItemCreate,
                     db: Session = Depends(db.get_db)):
-    question_crud.create_question(db=db, question_create=_question_create)
+
+    crud.item.create_item(db=db, item_create=_item_create)
 
 @router.post("/update/", status_code=status.HTTP_204_NO_CONTENT)
-def update_item(_question_update: question_schema.QuestionUpdate,
+def update_item(_item_update: ItemUpdate,
                     db: Session = Depends(db.get_db),
-                    current_user: User = Depends(get_current_user)):
-    db_question = question_crud.get_question(db, question_id=_question_update.question_id)
-    if not db_question:
+                    current_user: UserModel = Depends(get_current_user)):
+
+    db_item = crud.get_item(db, item_id=_item_update.item_id)
+
+    if not db_item:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="데이터를 찾을수 없습니다.")
-    if current_user.id != db_question.user.id:
+    if current_user.id != db_item.user.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="수정 권한이 없습니다.")
-    question_crud.update_question(db=db, db_question=db_question,
-                                  question_update=_question_update)
+    crud.update_item(db=db, db_item=db_item,
+                                  item_update=_item_update)
 @router.post("/delete/", status_code=status.HTTP_204_NO_CONTENT)
-def question_delete(_question_delete: question_schema.QuestionDelete,
+def item_delete(_item_delete: ItemDelete,
                     db: Session = Depends(db.get_db),
-                    current_user: User = Depends(get_current_user)):
-    db_question = question_crud.get_question(db, question_id=_question_delete.question_id)
-    if not db_question:
+                    current_user: UserModel = Depends(get_current_user)):
+
+    db_item = crud.get_item(db, item_id=_item_delete.item_id)
+
+    if not db_item:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="데이터를 찾을수 없습니다.")
-    if current_user.id != db_question.user.id:
+    if current_user.id != db_item.user.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="삭제 권한이 없습니다.")
-    question_crud.delete_question(db=db, db_question=db_question)
+    crud.delete_item(db=db, db_item=db_item)
 

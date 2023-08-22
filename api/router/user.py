@@ -8,8 +8,8 @@ from jose import jwt, JWTError
 from datetime import timedelta, datetime
 
 
-import crud
-import schemas
+import crud.user as crud
+import schemas.user as schema
 import db.orm_connector as db
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
@@ -23,7 +23,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    # dependencies=[Depends(get_token_header)],
     dependencies=[Depends(db.get_db)],
     responses={404: {"description": "Not found"}},
 )
@@ -34,12 +33,12 @@ router = APIRouter(
     responses={403: {"description": "Operation forbidden"}},
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def register(_user_create: schemas.user.UserCreate, db: Session = Depends(db.get_db)):
-    user = crud.user.get_existing_user(db, user_create=_user_create)
+async def register(_user_create: schema.UserCreate, db: Session = Depends(db.get_db)):
+    user = crud.get_existing_user(db, user_create=_user_create)
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail="이미 존재하는 사용자입니다.")
-    crud.user.create_user(db=db, user_create=_user_create)
+    crud.create_user(db=db, user_create=_user_create)
 
 
 @router.post(
@@ -47,13 +46,13 @@ async def register(_user_create: schemas.user.UserCreate, db: Session = Depends(
     tags=["users"],
     status_code=200,
     # responses={403: {"description": "Operation forbidden"}},
-    response_model=schemas.user.Token)
+    response_model=schema.Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(),
                            db: Session = Depends(db.get_db)):
 
     # check user and password
-    user = crud.user.get_user(db, form_data.username)
-    if not user or not crud.users.pwd_context.verify(form_data.password, user.password):
+    user = crud.get_user(db, form_data.username)
+    if not user or not crud.pwd_context.verify(form_data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -88,7 +87,7 @@ def get_current_user(token: str = Depends(oauth2_scheme),
     except JWTError:
         raise credentials_exception
     else:
-        user = crud.user.get_user(db, username=username)
+        user = crud.get_user(db, username=username)
         if user is None:
             raise credentials_exception
         return user

@@ -32,6 +32,8 @@ class ItemList(BaseModel):
     total: int = 0
     item_list: list[Item] = []
 
+class ItemCreate(BaseModel):
+    pass
 class ItemUpdate(Item):
     item_id: int
 
