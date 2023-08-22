@@ -41,7 +41,7 @@ async def register(user: schema.UserCreate, db: Session = Depends(db.get_db)):
     status_code=200,
     # responses={403: {"description": "Operation forbidden"}},
     response_model=schema.Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(),
+async def login(form_data: OAuth2PasswordRequestForm = Depends(),
                            db: Session = Depends(db.get_db)):
 
     # check user and password
@@ -67,7 +67,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(),
         "username": user.username
     }
 
-def user_token(token: str = Depends(oauth2_scheme),
+async def user_token(token: str = Depends(oauth2_scheme),
                db: Session = Depends(db.get_db)):
 
     credentials_exception = HTTPException(

@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 @router.get("/list", response_model=ItemList)
-def read_item(db: Session = Depends(db.get_db),
+async def read_item(db: Session = Depends(db.get_db),
                 current_user: UserModel = Depends(user_token),
                 cursor: int = 0, size: int = 10):
 
@@ -28,7 +28,7 @@ def read_item(db: Session = Depends(db.get_db),
     return JSONResponse(status_code=status.HTTP_200_OK, content=response_builder(200, 'ok', item_list))
 
 @router.post("/create/", status_code=status.HTTP_204_NO_CONTENT)
-def create_item(item: ItemCreate,
+async def create_item(item: ItemCreate,
                 db: Session = Depends(db.get_db),
                 current_user: UserModel = Depends(user_token)):
 
@@ -36,7 +36,7 @@ def create_item(item: ItemCreate,
     crud.create_item(db=db, item=item, initial=name_initial, user_id=current_user.user_id)
 
 @router.post("/update/", status_code=status.HTTP_204_NO_CONTENT)
-def update_item(item: ItemUpdate,
+async def update_item(item: ItemUpdate,
                 db: Session = Depends(db.get_db),
                 current_user: UserModel = Depends(user_token)):
 
@@ -51,7 +51,7 @@ def update_item(item: ItemUpdate,
                             detail=response_builder(400, '권한 오류'))
     crud.update_item(db=db,item=item)
 @router.post("/delete/", status_code=status.HTTP_204_NO_CONTENT)
-def delete_item(item: ItemDelete,
+async def delete_item(item: ItemDelete,
                 db: Session = Depends(db.get_db),
                 current_user: UserModel = Depends(user_token)):
 
