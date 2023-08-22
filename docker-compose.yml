@@ -1,0 +1,29 @@
+version: '3.10'
+
+services:
+  app:
+    #restart: always
+    build: .
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    links:
+      - db:db
+    entrypoint:
+      - ./run.sh
+    depends_on:
+      - db
+    volumes:
+      - ./:/app/
+  db:
+    restart: always
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: 'root'
+      MYSQL_ROOT_PASSWORD: '1234'
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    command: ['mysqld', '--character-set-server=utf8', '--collation-server=utf8_general_ci']
