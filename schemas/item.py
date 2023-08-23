@@ -2,13 +2,10 @@ import datetime
 from typing_extensions import Annotated
 from pydantic import BaseModel, validator, constr
 
-SizeType = Annotated[
-    str,
-    constr(to_lower=True, pattern=r'(?:small|large)'),
-]
+SizeType = constr(to_lower=True, regex=r'(?:small|large)')
 
 class Item(BaseModel):
-    item_id: int
+    id: int
     category: str
     price: str
     src_price: str
@@ -21,7 +18,7 @@ class Item(BaseModel):
     user_id: int
 
     @validator('*')#수정하기
-    def check_null(self, value):
+    def check_null(cls, value):
         if not isinstance(value, str):
             raise ValueError('Empty string {}', value )#고치기
         return value
@@ -54,4 +51,4 @@ class ItemUpdate(Item):
 
 
 class ItemDelete(BaseModel):
-    item_id: int
+    id: int

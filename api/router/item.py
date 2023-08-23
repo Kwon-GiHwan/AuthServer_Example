@@ -8,8 +8,8 @@ import crud.item as crud
 from db.models import UserModel
 import db.orm_connector as db
 
-from ..auth.token import user_token
-from ..scripts.word_frag import separate
+from auth.token import user_token
+from scripts.word_frag import separate
 
 router = APIRouter(
     prefix="/items",

@@ -1,12 +1,10 @@
 from typing import Optional
 from typing_extensions import Annotated
-from pydantic import BaseModel, validator, StringConstraints
+from pydantic import BaseModel, validator,  constr
 import re
 
-PhoneNumber = Annotated[
-    str,
-    StringConstraints(pattern=r"\d{3}-\d{4}-\d{4}$"),
-]
+PhoneNumber = constr(regex=r"\d{3}-\d{4}-\d{4}$")
+
 
 class User(BaseModel):
     id: int
@@ -25,7 +23,7 @@ class UserCreate(BaseModel):
     password: str
 
     @validator('phone', 'password')
-    def check_null(self, value):
+    def check_null(cls, value):
         if not value or not value.strip():
             raise ValueError('Empty string')
         return value

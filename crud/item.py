@@ -16,7 +16,7 @@ def get_list(db: Session, user_id: int, cursor: int = 0, size: int = 10):
     return item_list  # (전체 건수, 페이징 적용된 질문 목록)
 
 def get_item(db: Session, item_id: int):
-    item = db.query(schema.Item).filter(schema.Item.item_id == item_id).first()
+    item = db.query(schema.Item).filter(schema.Item.id == item_id).first()
 
     return item  # (전체 건수, 페이징 적용된 질문 목록)
 
@@ -53,7 +53,7 @@ def create_item(db: Session, item: schema.ItemCreate, initial:str, user_id: int)
 
 def update_item(db: Session, item: schema.ItemUpdate):
 
-    db.query(schema.Item).filter(schema.Item.item_id == item.item_id).update(**item.model_dump().pop('item_id'))
+    db.query(schema.Item).filter(schema.Item.id == item.id).update(**item.model_dump().pop('id'))
     db.commit()
 
 def delete_item(db: Session, item: schema.Item):

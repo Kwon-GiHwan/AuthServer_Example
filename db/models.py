@@ -5,18 +5,10 @@ from sqlalchemy.orm import relationship
 
 from .orm_connector import Base
 
-class UserModel(Base):
-    __tablename__ = 'user'
-
-    user_id = Column(Integer, primary_key=True, autoincrement=True)
-    phone = Column(String, nullable=False)
-    password = Column(String, nullable=False)
-
-
 class ItemModel(Base):
-    __tablename__ = 'item'
+    __tablename__ = "item"
 
-    item_id: Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True)
     category: Column(String, nullable=False)
     price: Column(Integer, nullable=False)
     cost: Column(Integer, nullable=False)
@@ -27,6 +19,16 @@ class ItemModel(Base):
     duedate: Column(DateTime, nullable=False)
     size: Column(String, nullable=False)#small or large
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)#수정하기
+
+class UserModel(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    phone = Column(String, nullable=False)
+    password = Column(String, nullable=False)
+
+
+
 
 
 
