@@ -18,10 +18,10 @@ USE `backend` ;
 -- Table `backend`.`user`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `backend`.`user` (
-  `user_id` INT NOT NULL AUTO_INCREMENT,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `phone` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`user_id`))
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
@@ -29,7 +29,7 @@ ENGINE = InnoDB;
 -- Table `backend`.`item`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `backend`.`item` (
-  `item_id` INT NOT NULL AUTO_INCREMENT,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `category` VARCHAR(45) NOT NULL,
   `price` INT NOT NULL,
   `cost` INT NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `backend`.`item` (
   PRIMARY KEY (`item_id`),
   CONSTRAINT `user_id`
     FOREIGN KEY (`user_id`)
-    REFERENCES `backend`.`user` (`user_id`)
+    REFERENCES `backend`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
