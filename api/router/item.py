@@ -16,7 +16,7 @@ router = APIRouter(
     tags=["items"],
 )
 
-@router.get("/list")
+@router.get("/user_item")
 async def read_item(db: Session = Depends(db.get_db),
                 current_user: UserModel = Depends(user_token),
                 cursor: int = 0, size: int = 10):
@@ -27,11 +27,16 @@ async def read_item(db: Session = Depends(db.get_db),
 
     return JSONResponse(status_code=status.HTTP_200_OK, content=response_builder(200, 'ok', item_list))
 
-@router.get("/list")
+@router.get("/search")
 async def search_item(db: Session = Depends(db.get_db),
                 current_user: UserModel = Depends(user_token),
+                item_id: int = None,
                 item_name: str = None,
                 cursor: int = 0, size: int = 10):
+
+    if item_id:
+        item = crud.get_item(
+            db, item_id = item_id)
 
     if (has_chosung(item_name)):
         item_list = crud.get_list_initial(

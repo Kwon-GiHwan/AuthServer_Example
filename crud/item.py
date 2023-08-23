@@ -15,6 +15,13 @@ def get_list(db: Session, user_id: int, cursor: int = 0, size: int = 10):
 
     return item_list  # (전체 건수, 페이징 적용된 질문 목록)
 
+
+def get_item(db: Session, item_id :int):
+    item = db.query(schema.Item).filter(
+        schema.Item.id == item_id).first()
+    return item
+
+
 def get_list_initial(db: Session, user_id: int, item_name:str = None,  cursor: int = 0, size: int = 10):
 
     total = 0#전체 갯수 조회하기
