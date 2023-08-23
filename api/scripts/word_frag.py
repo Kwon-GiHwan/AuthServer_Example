@@ -1,10 +1,3 @@
-#검색테이블 사용  https://github.com/withalice/flask-restapi-docker/blob/master/erd.png
-#substr 사용https://jaehoney.tistory.com/142
-#매 문자가 초성인지 검사, 아래 substr붙이거나 단어 포함 붙이거나
-#가-깋
-# SUBSTR(name, 1, 1) >= 가 AND SUBSTR(name, 1, 1) < 깋 AND
-# SUBSTR(name, 2, 1) >= 마 AND SUBSTR(name, 2, 1) < 바 AND
-# SUBSTR(name, 3, 1) >= 사 AND SUBSTR(name, 3, 1) < 싸
 
 import re
 def separate(ch):

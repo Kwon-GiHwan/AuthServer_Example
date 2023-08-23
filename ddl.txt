@@ -1,0 +1,54 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema backend
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema backend
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `backend` DEFAULT CHARACTER SET utf8 ;
+USE `backend` ;
+
+-- -----------------------------------------------------
+-- Table `backend`.`user`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `backend`.`user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `phone` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `backend`.`item`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `backend`.`item` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `category` VARCHAR(45) NOT NULL,
+  `price` INT NOT NULL,
+  `cost` INT NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
+  `initial` VARCHAR(45) NOT NULL,
+  `description` VARCHAR(100) NOT NULL,
+  `barcode` VARCHAR(100) NOT NULL,
+  `duedate` DATETIME NOT NULL,
+  `size` VARCHAR(45) NOT NULL,
+  `user_id` INT NOT NULL,
+  PRIMARY KEY (`item_id`),
+  CONSTRAINT `user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `backend`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
