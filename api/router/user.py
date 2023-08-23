@@ -45,7 +45,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),
                            db: Session = Depends(db.get_db)):
 
     # check user and password
-    user = crud.get_user(db, form_data.username)
+    user = crud.get_user(db, form_data.phone)
 
     if not user or not crud.pwd_context.verify(form_data.password, user.password):
         raise HTTPException(
@@ -56,7 +56,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),
 
     # make access token
     data = {
-        "sub": user.username,
+        "sub": user.phone,
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     }
     access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
@@ -64,7 +64,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "username": user.username
+        "phone": user.phone
     }
 
 async def user_token(token: str = Depends(oauth2_scheme),
@@ -77,13 +77,13 @@ async def user_token(token: str = Depends(oauth2_scheme),
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        phone: str = payload.get("sub")
+        if phone is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
     else:
-        user = crud.get_user(db, username=username)
+        user = crud.get_user(db, phone=phone)
         if user is None:
             raise credentials_exception
         return user
