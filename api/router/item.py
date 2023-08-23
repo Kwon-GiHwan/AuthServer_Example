@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 @router.get("/user_item")
-async def read_item(db: Session = Depends(db.get_db),
+async def read_items(db: Session = Depends(db.get_db),
                 current_user: UserModel = Depends(user_token),
                 cursor: int = 0, size: int = 10):
 
@@ -42,7 +42,7 @@ async def search_item(db: Session = Depends(db.get_db),
         item_list = crud.get_list_initial(
             db, user_id=current_user.user_id, item_name = item_name, cursor=cursor, size=size)
     else:
-        item_list = crud.get_list(
+        item_list = crud.search_name(
             db, user_id=current_user.user_id, cursor=cursor, size=size)
 
 
