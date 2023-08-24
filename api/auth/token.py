@@ -4,14 +4,16 @@ from jose import jwt, JWTError
 from fastapi import APIRouter, Depends, HTTPException, status
 import db.orm_connector as db
 import crud.user as crud
-
+from api.main import SECRET_KEY
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
+
+ALGORITHM = "HS256"
 def user_token(token: str = Depends(oauth2_scheme),
                db: Session = Depends(db.get_db)):
 
     ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
-    SECRET_KEY = "4ab2fce7a6bd79e1c014396315ed322dd6edb1c5d975c6b74a2904135172c03c"
-    ALGORITHM = "HS256"
+
+
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

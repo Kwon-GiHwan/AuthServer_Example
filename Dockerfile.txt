@@ -1,15 +1,12 @@
-FROM python:3  # python ver은 3
+FROM python:3.10.0-alpine
 
 WORKDIR /usr/src/app  # /usr/src/app으로 이동
 
 COPY requirements.txt .  # requirements.txt 복사
 
 RUN pip install --no-cache-dir -r requirements.txt  # requirements.txt 내용 실행
+COPY . .
 
-RUN pip install pymysql  # mysql 연동을 위한 pymysql 설치
-
-COPY . .  # 현재 디렉토리에 있는거 전부 복사
-
-EXPOSE 80  # 포트 8000번 open
+EXPOSE 80
 
 CMD ["python", "./api/main.py"]

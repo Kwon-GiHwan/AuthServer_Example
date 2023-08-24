@@ -1,10 +1,11 @@
-version: "3.8"
+version: "3"
 
 services:
   fast_api:
-    image: python:3.10.0-alpine
+#    image: python:3.10.0-alpine
     build:
       context: .
+      dockerfile: Dockerfile.txt
     restart: always
     volumes:
       - ./:/app/
@@ -12,12 +13,29 @@ services:
       - network_backend
     ports:
       - "80:80"
-    env_file:
-      - ./.env
+#    env_file:
+#      - ./.env
+#  entrypoint:
+#    - sh
+#    - config/docker/entrypoint.prod.sh
+
+#  nginx: # 컨테이너2 : nginx
+#    container_name: nginx
+#    build: ./config/nginx
+#    volumes:
+#      - static:/home/app/web/static
+#      - media:/home/app/web/media
+#    ports:
+#      - "80:80"
+#    depends_on:
+#      - fast_api
 
   mysql:
     image: mysql:5.7
     restart: always
+#    build:
+#      context: /db
+#      dockerfile: Dockerfile_db.txt
     volumes:
       - ./mysql/db:/docker-entrypoint-initdb.d
     networks:
