@@ -1,0 +1,29 @@
+name: CI/CD with Docker Compose
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: |
+          my-docker-registry.com/my-app:${{ github.sha }}
+          my-docker-registry.com/my-app:latest
+
+    - name: Deploy with Docker Compose
+      uses: docker/compose-action@v1
+      with:
+        compose-file: docker-compose.yml
+        project-name: my-app
+        command: up -d
