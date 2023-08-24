@@ -1,7 +1,7 @@
 FROM python:3.10.0-alpine
 
-WORKDIR /usr/src/app  # /usr/src/app으로 이동
-
+WORKDIR /app  # /usr/src/app으로 이동
+ADD . /app
 COPY . .
 
 #RUN apk add install mysql-devel gcc
@@ -27,4 +27,4 @@ RUN POETRY_VIRTUALENVS_CREATE=false \
 
 EXPOSE 80
 
-CMD ["python", "./api/main.py"]
+#CMD ["python", "./api/main.py"]
