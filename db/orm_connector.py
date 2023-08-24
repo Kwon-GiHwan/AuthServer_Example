@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from typing import Any
 
 
-SQLALCHEMY_DATABASE_URL = "mysql+mysqldb://root:1234@localhost:3306/backend"
+SQLALCHEMY_DATABASE_URL = "mysql+mysqldb://root:1234@0.0.0.0:3306/backend"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
