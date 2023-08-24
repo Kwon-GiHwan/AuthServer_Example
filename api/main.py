@@ -2,12 +2,15 @@ from fastapi import  FastAPI
 from router import user, item
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import secrets
+
 
 app = FastAPI()
 
 origins = [
     "http://127.0.0.1:3000",
 ]
+SECRET_KEY = secrets.token_hex(32)
 
 app.add_middleware(
     CORSMiddleware,

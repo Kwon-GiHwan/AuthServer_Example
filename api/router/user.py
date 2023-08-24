@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
 from datetime import timedelta, datetime
-import secrets
+from api.main import SECRET_KEY
+
 
 
 import crud.user as crud
@@ -13,7 +14,7 @@ import db.orm_connector as db
 from schemas.response import response_builder
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
-SECRET_KEY = secrets.token_hex(32)
+
 ALGORITHM = "HS256"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
@@ -66,24 +67,3 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),
         "token_type": "bearer",
         "phone": user.phone
     }
-
-async def user_token(token: str = Depends(oauth2_scheme),
-               db: Session = Depends(db.get_db)):
-
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        phone: str = payload.get("sub")
-        if phone is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    else:
-        user = crud.get_user(db, phone=phone)
-        if user is None:
-            raise credentials_exception
-        return user
