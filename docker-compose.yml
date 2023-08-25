@@ -5,7 +5,7 @@ services:
 #    image: python:3.10.0-alpine
     build:
       context: .
-      dockerfile: Dockerfile.txt
+      dockerfile: Dockerfile_.txt
     restart: always
     volumes:
       - ./:/app/
@@ -13,7 +13,7 @@ services:
       - network_backend
     ports:
       - "80:80"
-    command: ["chmod", "+x", "/app/*.sh"]
+#    command: ["chmod", "+x", "/app/*.sh"]
 #    env_file:
 #      - ./.env
 #  entrypoint:

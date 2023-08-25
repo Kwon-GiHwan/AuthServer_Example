@@ -3,7 +3,7 @@ from typing_extensions import Annotated
 from pydantic import BaseModel, validator,  constr
 import re
 
-PhoneNumber = constr(regex=r"\d{3}-\d{4}-\d{4}$")
+PhoneNumber = constr(pattern=r"\d{3}-\d{4}-\d{4}$")
 
 
 class User(BaseModel):
@@ -12,7 +12,7 @@ class User(BaseModel):
     password: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Properties to receive via API on creation
 # class UserCreate(UserBase):

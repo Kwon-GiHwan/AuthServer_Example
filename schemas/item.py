@@ -2,7 +2,7 @@ import datetime
 from typing_extensions import Annotated
 from pydantic import BaseModel, validator, constr
 
-SizeType = constr(to_lower=True, regex=r'(?:small|large)')
+SizeType = constr(to_lower=True, pattern=r'(?:small|large)')
 
 class Item(BaseModel):
     id: int
@@ -24,7 +24,7 @@ class Item(BaseModel):
         return value
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ItemList(BaseModel):
     total: int = 0
