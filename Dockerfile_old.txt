@@ -31,17 +31,36 @@ RUN apk add mpc1-dev
 RUN apk add build-base
 #RUN apk --update add py-mysqldb
 
-RUN pip install poetry==1.4.2
+
+RUN apk add --no-cache \
+        curl \
+        gcc \
+        libressl-dev \
+        musl-dev \
+        libffi-dev && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile=minimal && \
+    source $HOME/.cargo/env && \
+    pip --no-cache-dir install poetry==1.4.2 && \
+    apk del \
+        curl \
+        gcc \
+        libressl-dev \
+        musl-dev \
+        libffi-dev
+
+RUN pip --no-cache-dir install poetry==1.4.2
 
 COPY pyproject.toml /app/
 COPY poetry.lock /app/
 
-RUN poetry config virtualenvs.create false
+RUN poetry config virtualenvs.create false --local
+RUN poetry install --no-root && rm -rf $POETRY_CACHE_DIR
 #RUN poetry env use python3
-RUN poetry install --without dev && rm -rf $POETRY_CACHE_DIR
-
 COPY . /app
 
 #RUN poetry install --without dev
 
-ENTRYPOINT ["poetry", "run", "python", "-m", "main.py"]
+
+#ENTRYPOINT ["poetry", "env", "info", "--path"]
+#RUN source /app/.venv/bin/activate
+ENTRYPOINT ["poetry", "run", "python3", "main.py"]

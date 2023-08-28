@@ -5,7 +5,7 @@ services:
 #    image: python:3.10.0-alpine
     build:
       context: .
-      dockerfile: Dockerfile_txt
+      dockerfile: Dockerfile_poetry.txt
     restart: always
     volumes:
       - ./:/app/

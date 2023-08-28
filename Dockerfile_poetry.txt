@@ -1,0 +1,31 @@
+FROM python:3.10.0-alpine
+
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONHASHSEED=random \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+ENV PIP_DEFAULT_TIMEOUT=100 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    POETRY_VERSION=1.4.2
+RUN apk add mysql-client
+
+#RUN apk update \
+#    && apk add --virtual build-deps gcc libffi-dev python3-dev musl-dev \
+#    && apk add --no-cache mariadb-dev\
+#    && apk del build-deps
+RUN apk add --no-cache gcc libffi-dev musl-dev
+RUN pip install "poetry==$POETRY_VERSION"
+RUN python -m venv /venv
+
+RUN pip wheel --use-pep517 "mysqlclient (==2.2.0)"
+
+COPY pyproject.toml poetry.lock ./
+RUN poetry install
+
+COPY . .
+
+ENTRYPOINT poetry run python ./main.py
+
