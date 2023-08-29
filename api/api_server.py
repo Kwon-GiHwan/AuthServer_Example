@@ -20,6 +20,7 @@ app.include_router(user.router)
 app.include_router(item.router)
 
 
-def api_main():
+if __name__ == "__main__":
 
     uvicorn.run("api.api_server:app", host="localhost", port=80, reload=True, log_level="info")
+    #uvicorn.run("api.api_server:app","--proxy-headers",  host="localhost", port=80, reload=True, log_level="info")
