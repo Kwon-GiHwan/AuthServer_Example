@@ -6,7 +6,8 @@ from schemas.item import ItemList, ItemDelete, ItemCreate, ItemUpdate
 from schemas.response import response_builder
 import crud.item as crud
 from db.models import UserModel
-import db.orm_connector as db
+from db import orm_connector as db
+
 
 from .scripts.token import user_token
 from .scripts.word_frag import separate, has_chosung

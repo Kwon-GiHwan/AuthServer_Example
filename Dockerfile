@@ -9,8 +9,6 @@ COPY poetry.lock* /tmp/
 
 RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
-
-
 FROM python:3.10-alpine
 
 WORKDIR /app
@@ -29,7 +27,7 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 COPY . /app
 
-ENTRYPOINT ["python3", "./api/api_server.py"]
+ENTRYPOINT ["python3", "./api_server.py"]
 
 
 

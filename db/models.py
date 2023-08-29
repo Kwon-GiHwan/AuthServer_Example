@@ -3,7 +3,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
-from .orm_connector import Base
+from db.orm_connector import Base
 
 class ItemModel(Base):
     __tablename__ = "item"

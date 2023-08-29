@@ -9,7 +9,7 @@ from datetime import timedelta, datetime
 from .scripts.token import SECRET_KEY
 import crud.user as crud
 import schemas.user as schema
-import db.orm_connector as db
+from db import orm_connector as db
 
 from schemas.response import response_builder
 

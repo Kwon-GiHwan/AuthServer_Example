@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .router import user, item
+from router import user, item
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -22,5 +22,5 @@ app.include_router(item.router)
 
 if __name__ == "__main__":
 
-    uvicorn.run("api.api_server:app", host="localhost", port=80, reload=True, log_level="info")
+    uvicorn.run("api_server:app", proxy_headers=True, host="localhost", port=80, reload=True, log_level="info")
     #uvicorn.run("api.api_server:app","--proxy-headers",  host="localhost", port=80, reload=True, log_level="info")
